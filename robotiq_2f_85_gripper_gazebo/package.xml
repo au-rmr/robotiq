@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>robotiq_2f_85_gripper_gazebo</name>
-  <version>1.0.0</version>
+  <version>1.1.0</version>
   <description>
-      Gazebo wrapper for Robotiq ARG 2-Finger 85mm model C3. 
+      Gazebo wrapper for Robotiq 2F-85 v4.
   </description>
   <author email="matteo.lucchi@joanneum.at">Matteo Lucchi</author>
   <maintainer email="matteo.lucchi@joanneum.at">Matteo Lucchi</maintainer>
