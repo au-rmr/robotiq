@@ -66,3 +66,6 @@ install(DIRECTORY include/${PROJECT_NAME}/
    DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
    FILES_MATCHING PATTERN "*.h"
 )
+
+install(PROGRAMS nodes/robotiq_2f_gripper_socket_action_server.py
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
