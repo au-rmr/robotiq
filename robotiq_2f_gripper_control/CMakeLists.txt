@@ -1,5 +1,5 @@
 # http://ros.org/doc/groovy/api/catkin/html/user_guide/supposed.html
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.0.2)
 project(robotiq_2f_gripper_control)
 find_package(catkin REQUIRED COMPONENTS message_generation robotiq_ethercat roscpp rospy)
 
@@ -31,7 +31,7 @@ generate_messages()
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
   INCLUDE_DIRS include
-  CATKIN_DEPENDS message_runtime robotiq_ethercat roscpp rospy 
+  CATKIN_DEPENDS message_runtime robotiq_ethercat roscpp rospy
   LIBRARIES ${robotiq_ethercat_LIBRARIES}
 )
 
@@ -71,7 +71,7 @@ install(
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
-install(PROGRAMS nodes/Robotiq2FGripperSocketNode.py nodes/Robotiq2FGripperRtuNode.py nodes/Robotiq2FGripperSimpleController.py nodes/Robotiq2FGripperStatusListener.py nodes/Robotiq2FGripperTcpNode.py 
+install(PROGRAMS nodes/Robotiq2FGripperSocketNode.py nodes/Robotiq2FGripperRtuNode.py nodes/Robotiq2FGripperSimpleController.py nodes/Robotiq2FGripperStatusListener.py nodes/Robotiq2FGripperTcpNode.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 
 install(PROGRAMS src/${PROJECT_NAME}/robotiq_2f_gripper_ctrl.py
