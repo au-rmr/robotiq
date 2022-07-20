@@ -70,5 +70,5 @@ class GripperActionServer(object):
 
 if __name__ == '__main__':
     rospy.init_node('gripper_action_server')
-    server = GripperActionServer(rospy.get_name())
+    server = GripperActionServer("gripper_controller/gripper_cmd")
     rospy.spin()
