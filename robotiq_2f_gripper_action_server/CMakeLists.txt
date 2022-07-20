@@ -28,7 +28,6 @@ add_executable(${PROJECT_NAME}_node
 )
 
 add_dependencies(${PROJECT_NAME}_node
-  ${PROJECT_NAME}_generate_messages_cpp
   ${${PROJECT_NAME}_EXPORTED_TARGETS}
   ${robotiq_2f_gripper_control_EXPORTED_TARGETS})
 
@@ -40,10 +39,6 @@ target_link_libraries(${PROJECT_NAME}_node
 add_executable(${PROJECT_NAME}_client_test
   src/${PROJECT_NAME}_client_test.cpp
 )
-
-add_dependencies(${PROJECT_NAME}_client_test
-  ${PROJECT_NAME}_generate_messages_cpp
-  ${robotiq_action_server_EXPORTED_TARGETS})
 
 target_link_libraries(${PROJECT_NAME}_client_test
   ${catkin_LIBRARIES}
