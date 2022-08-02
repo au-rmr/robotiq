@@ -1,7 +1,7 @@
 # http://ros.org/doc/groovy/api/catkin/html/user_guide/supposed.html
 cmake_minimum_required(VERSION 3.0.2)
 project(robotiq_2f_gripper_control)
-find_package(catkin REQUIRED COMPONENTS message_generation robotiq_ethercat roscpp rospy)
+find_package(catkin REQUIRED COMPONENTS message_generation roscpp rospy)
 
 #set the default path for built executables to the "bin" directory
 #set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
@@ -31,8 +31,8 @@ generate_messages()
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
   INCLUDE_DIRS include
-  CATKIN_DEPENDS message_runtime robotiq_ethercat roscpp rospy
-  LIBRARIES ${robotiq_ethercat_LIBRARIES}
+  CATKIN_DEPENDS message_runtime roscpp rospy
+  # LIBRARIES ${robotiq_ethercat_LIBRARIES}
 )
 
 include_directories(
@@ -40,17 +40,17 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
-add_executable(robotiq_2f_gripper_ethercat_node
-  src/${PROJECT_NAME}/robotiq_2f_gripper_ethercat_client.cpp
-  src/${PROJECT_NAME}/robotiq_2f_gripper_ethercat_node.cpp
-)
+# add_executable(robotiq_2f_gripper_ethercat_node
+#   src/${PROJECT_NAME}/robotiq_2f_gripper_ethercat_client.cpp
+#   src/${PROJECT_NAME}/robotiq_2f_gripper_ethercat_node.cpp
+# )
 
-target_link_libraries(robotiq_2f_gripper_ethercat_node
-  ${robotiq_ethercat_LIBRARIES}
-  ${catkin_LIBRARIES}
-)
+# target_link_libraries(robotiq_2f_gripper_ethercat_node
+#   ${robotiq_ethercat_LIBRARIES}
+#   ${catkin_LIBRARIES}
+# )
 
-add_dependencies(robotiq_2f_gripper_ethercat_node ${PROJECT_NAME}_generate_messages_cpp)
+# add_dependencies(robotiq_2f_gripper_ethercat_node ${PROJECT_NAME}_generate_messages_cpp)
 
 #############
 ## Install ##
@@ -64,12 +64,12 @@ install(DIRECTORY include/${PROJECT_NAME}/
   FILES_MATCHING PATTERN "*.h"
 )
 
-install(
-  TARGETS robotiq_2f_gripper_ethercat_node
-  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-)
+# install(
+#   # TARGETS robotiq_2f_gripper_ethercat_node
+#   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+#   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+#   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+# )
 
 install(PROGRAMS nodes/Robotiq2FGripperSocketNode.py nodes/Robotiq2FGripperRtuNode.py nodes/Robotiq2FGripperSimpleController.py nodes/Robotiq2FGripperStatusListener.py nodes/Robotiq2FGripperTcpNode.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
