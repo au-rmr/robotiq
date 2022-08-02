@@ -15,6 +15,10 @@ add_message_files(
   FILES
   Robotiq2FGripper_robot_input.msg
   Robotiq2FGripper_robot_output.msg
+  finger_gripper_input.msg
+  finger_gripper_output.msg
+  vacuum_gripper_input.msg
+  vacuum_gripper_output.msg
 )
 
 catkin_python_setup()
