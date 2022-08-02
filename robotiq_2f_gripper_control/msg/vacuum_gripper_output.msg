@@ -1,4 +1,5 @@
 uint8 rACT
+uint8 rMOD
 uint8 rGTO
 uint8 rATR
 uint8 rPR
