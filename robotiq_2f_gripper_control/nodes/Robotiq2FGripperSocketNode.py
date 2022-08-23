@@ -68,14 +68,14 @@ class RobotiqCModelURCap:
     GTO = 'GTO'  # gto : gripper regulation (0 is hold current pressure, 1 to follow vacuum request)
     ATR = 'ATR'  # atr : auto-release (0 for normal operation, 1 to immediately release)
     PR  = 'POS'   # pr  : max pressure request in manual mode. <100 is vacuum, >100 is pressure, 100=ambient
-    SP  = 'SP'   # sp  : timeout period, units are 100ms (i.e. 20 = 2000 ms = 2s)
-    FR  = 'FR'   # fr  : min pressure request in manual mode. <100 is vacuum, >100 is pressure, 100=ambient
+    SP  = 'SPE'   # sp  : timeout period, units are 100ms (i.e. 20 = 2000 ms = 2s)
+    FR  = 'FOfR'   # fr  : min pressure request in manual mode. <100 is vacuum, >100 is pressure, 100=ambient
     # READ VARIABLES
     STA = 'STA'  # status (0 = is not activated, 3 = active)
     OBJ = 'OBJ'  # object detection (0 = regulating pressure, 1 = object at min pressure, 2 = object at max pressure, 3 = no object)
     VAS = 'VAS'  # object detection (0 = standby, 1 = gripping, 2 = releasing at ambient, 3 = releasing at positive pressure)
     FLT = 'FLT'  # fault (0=ok, see manual for errors if not zero)
-    PO  = 'PRE'   # po  : pressure reading, actual pressure is 100 - PO kPa (gpo at 50 = -50 kPa)
+    PO  = 'POS'   # po  : pressure reading, actual pressure is 100 - PO kPa (gpo at 50 = -50 kPa)
     
     
     ENCODING = 'UTF-8'  # ASCII and UTF-8 both seem to work
@@ -327,9 +327,9 @@ class RobotiqCModelURCap:
         self._set_vars(var_dict)
         while(self._get_var(self.GTO) != 0):
             rospy.sleep(.005)
-        var_dict = dict([(self.PR, pressure), (self.GTO, 1)])
+        # var_dict = dict([(self.PR, pressure), (self.GTO, 1)])
         print(var_dict)
-        # var_dict = dict([(self.MOD, mode), (self.PR, max_pressure), (self.SP, timeout), (self.FR, min_pressure), (self.GTO, 1)])
+        var_dict = dict([(self.MOD, 0b01), (self.PR, pressure), (self.SP, 0), (self.FR, pressure+40), (self.GTO, 1)])
         return self._set_vars(var_dict)
 
     def move_and_wait_for_pos(self, position, speed, force):
