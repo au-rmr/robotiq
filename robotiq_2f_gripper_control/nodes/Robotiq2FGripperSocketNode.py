@@ -69,7 +69,7 @@ class RobotiqCModelURCap:
     ATR = 'ATR'  # atr : auto-release (0 for normal operation, 1 to immediately release)
     PR  = 'POS'   # pr  : max pressure request in manual mode. <100 is vacuum, >100 is pressure, 100=ambient
     SP  = 'SPE'   # sp  : timeout period, units are 100ms (i.e. 20 = 2000 ms = 2s)
-    FR  = 'FOfR'   # fr  : min pressure request in manual mode. <100 is vacuum, >100 is pressure, 100=ambient
+    FR  = 'FOR'   # fr  : min pressure request in manual mode. <100 is vacuum, >100 is pressure, 100=ambient
     # READ VARIABLES
     STA = 'STA'  # status (0 = is not activated, 3 = active)
     OBJ = 'OBJ'  # object detection (0 = regulating pressure, 1 = object at min pressure, 2 = object at max pressure, 3 = no object)
