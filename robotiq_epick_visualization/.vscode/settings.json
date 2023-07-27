@@ -1,0 +1,10 @@
+{
+    "python.autoComplete.extraPaths": [
+        "/home/aurmr/workspaces/py39_ws_clone/devel/lib/python3.9/site-packages",
+        "/home/aurmr/miniconda3/envs/py39_ws_clone/lib/python3.9/site-packages"
+    ],
+    "python.analysis.extraPaths": [
+        "/home/aurmr/workspaces/py39_ws_clone/devel/lib/python3.9/site-packages",
+        "/home/aurmr/miniconda3/envs/py39_ws_clone/lib/python3.9/site-packages"
+    ]
+}
