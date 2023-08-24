@@ -33,16 +33,20 @@ from enum import Enum
 import sys
 
 # Added for ROS
-from robotiq_2f_gripper_control.msg import Robotiq2FGripper_robot_input, Robotiq2FGripper_robot_output
+# from robotiq_2f_gripper_control.msg import Robotiq2FGripper_robot_input, Robotiq2FGripper_robot_output
+from robotiq_2f_gripper_control.msg import finger_gripper_input, finger_gripper_output, vacuum_gripper_input, vacuum_gripper_output
 import rospy
 import std_msgs.msg
 import os, rospkg
+
+gripper_type = True
 
 class RobotiqCModelURCap:
     """
     Communicates with the gripper directly via socket with string commands, leveraging string names for variables.
     Uses port 63352 which is opened by the Robotiq Gripper URCap and receives ASCII commands.
     """
+    # FINGER VARIABLES
     # WRITE VARIABLES (CAN ALSO READ)
     ACT = 'ACT'  # act : activate (1 while activated, can be reset to clear fault status)
     GTO = 'GTO'  # gto : go to (will perform go to with the actions set in pos, for, spe)
@@ -56,7 +60,24 @@ class RobotiqCModelURCap:
     PRE = 'PRE'  # position request (echo of last commanded position)
     OBJ = 'OBJ'  # object detection (0 = moving, 1 = outer grip, 2 = inner grip, 3 = no object at rest)
     FLT = 'FLT'  # fault (0=ok, see manual for errors if not zero)
-
+    
+    # VACUUM VARIABLES
+    # WRITE VARIABLES (CAN ALSO READ)
+    ACT = 'ACT'  # act : activate (1 while activated, can be reset to clear fault status)
+    MOD = 'MOD'  # mod : gripper mode (0 for automatic, 1 for advanced to set min/max vacuum/timeout)
+    GTO = 'GTO'  # gto : gripper regulation (0 is hold current pressure, 1 to follow vacuum request)
+    ATR = 'ATR'  # atr : auto-release (0 for normal operation, 1 to immediately release)
+    PR  = 'POS'   # pr  : max pressure request in manual mode. <100 is vacuum, >100 is pressure, 100=ambient
+    SP  = 'SPE'   # sp  : timeout period, units are 100ms (i.e. 20 = 2000 ms = 2s)
+    FR  = 'FOR'   # fr  : min pressure request in manual mode. <100 is vacuum, >100 is pressure, 100=ambient
+    # READ VARIABLES
+    STA = 'STA'  # status (0 = is not activated, 3 = active)
+    OBJ = 'OBJ'  # object detection (0 = regulating pressure, 1 = object at min pressure, 2 = object at max pressure, 3 = no object)
+    VAS = 'VAS'  # object detection (0 = standby, 1 = gripping, 2 = releasing at ambient, 3 = releasing at positive pressure)
+    FLT = 'FLT'  # fault (0=ok, see manual for errors if not zero)
+    PO  = 'POS'   # po  : pressure reading, actual pressure is 100 - PO kPa (gpo at 50 = -50 kPa)
+    
+    
     ENCODING = 'UTF-8'  # ASCII and UTF-8 both seem to work
 
     class GripperStatus(Enum):
@@ -73,20 +94,29 @@ class RobotiqCModelURCap:
         STOPPED_INNER_OBJECT = 2
         AT_DEST = 3
 
-    def __init__(self, address):
+    class GripperType(Enum):
+        VACUUM = 0
+        FINGER = 1
+
+    def __init__(self, address, gripper_type):
         """Constructor."""
         self.socket = None
         self.command_lock = threading.Lock()
+        if gripper_type == "vacuum":
+            self.gripper_type = RobotiqCModelURCap.GripperType.VACUUM
+        elif gripper_type == "finger":
+            self.gripper_type = RobotiqCModelURCap.GripperType.FINGER
+        else:
+            raise RuntimeError(f"Unknown gripper type requested: {gripper_type}")
         self._min_position = 0
         self._max_position = 255
         self._min_speed = 0
         self._max_speed = 255
         self._min_force = 0
         self._max_force = 255
-
         self.connect(address)
 
-    def connect(self, hostname, port = 63352, socket_timeout = 2.0):
+    def connect(self, hostname, port = 63352, socket_timeout = 5.0):
         """Connects to a gripper at the given address.
 
         :param hostname: Hostname or ip.
@@ -102,20 +132,38 @@ class RobotiqCModelURCap:
         """Closes the connection with the gripper."""
         self.socket.close()
 
+
     def sendCommand(self, command):
-        self.move(command.rPR, command.rSP, command.rFR)
+        if self.gripper_type == RobotiqCModelURCap.GripperType.FINGER:
+            self.move(command.rPR, command.rSP, command.rFR)
+        elif self.gripper_type == RobotiqCModelURCap.GripperType.VACUUM:
+            self.vacuum(command.rPR, command.rATR)
 
     def getStatus(self):
-        message = Robotiq2FGripper_robot_input()
-        #Assign the values to their respective variables
-        message.gACT = self._get_var(self.ACT)
-        message.gGTO = self._get_var(self.GTO)
-        message.gSTA = self._get_var(self.STA)
-        message.gOBJ = self._get_var(self.OBJ)
-        message.gFLT = self._get_var(self.FLT)
-        message.gPR  = self._get_var(self.PRE)
-        message.gPO  = self._get_var(self.POS)
-        # message.gCU  = self._get_var()  # current is not read by this package
+        if self.gripper_type == RobotiqCModelURCap.GripperType.FINGER:
+            message = finger_gripper_input()
+            #Assign the values to their respective variables
+            message.gACT = self._get_var(self.ACT)
+            message.gGTO = self._get_var(self.GTO)
+            message.gSTA = self._get_var(self.STA)
+            message.gOBJ = self._get_var(self.OBJ)
+            message.gFLT = self._get_var(self.FLT)
+            message.gPR  = self._get_var(self.PRE)
+            message.gPO  = self._get_var(self.POS)
+            # message.gCU  = self._get_var()  # current is not read by this package
+        elif self.gripper_type == RobotiqCModelURCap.GripperType.VACUUM:
+            message = vacuum_gripper_input()
+            #Assign the values to their respective variables
+            message.gACT = self._get_var(self.ACT)
+            message.gMOD = self._get_var(self.MOD)
+            message.gGTO = self._get_var(self.GTO)
+            message.gSTA = self._get_var(self.STA)
+            message.gOBJ = self._get_var(self.OBJ)
+            # message.gVAS = self._get_var(self.VAS)
+            message.gFLT = self._get_var(self.FLT)
+            message.gPO  = self._get_var(self.PO)
+        else:
+            raise RuntimeError(f"Unknown gripper type requested: {self.gripper_type}")
         return message
 
     def _set_vars(self, var_dict):
@@ -130,6 +178,7 @@ class RobotiqCModelURCap:
         for variable, value in var_dict.items():
             cmd += " " + variable + " " + str(value)
         cmd += '\n'  # new line is required for the command to finish
+        print(cmd)  
         # atomic commands send/rcv
         with self.command_lock:
             self.socket.sendall(cmd.encode(self.ENCODING))
@@ -178,16 +227,18 @@ class RobotiqCModelURCap:
         :param auto_calibrate: Whether to calibrate the minimum and maximum positions based on actual motion.
         """
         # clear and then reset ACT
-        self._set_var(self.STA, 0)
-        self._set_var(self.STA, 1)
+        self._set_var(self.ACT, 0)
+        self._set_var(self.GTO, 0)
+        self._set_var(self.ACT, 1)
 
         print("Waiting for activation")
         # wait for activation to go through
         while not self.is_active() and not rospy.is_shutdown():
+            print(self.getStatus())
             rospy.sleep(0.01)
         print("Activated.")
         # auto-calibrate position range if desired
-        if auto_calibrate:
+        if self.gripper_type == RobotiqCModelURCap.GripperType.FINGER and auto_calibrate:
             self.auto_calibrate()
 
     def is_active(self):
@@ -271,6 +322,16 @@ class RobotiqCModelURCap:
         var_dict = dict([(self.POS, clip_pos), (self.SPE, clip_spe), (self.FOR, clip_for), (self.GTO, 1)])
         return self._set_vars(var_dict), clip_pos
 
+    def vacuum(self, pressure, release):
+        var_dict = dict([(self.GTO, 0)])
+        self._set_vars(var_dict)
+        while(self._get_var(self.GTO) != 0):
+            rospy.sleep(.005)
+        # var_dict = dict([(self.PR, pressure), (self.GTO, 1)])
+        print(var_dict)
+        var_dict = dict([(self.MOD, 0b01), (self.PR, pressure), (self.SP, 0), (self.FR, pressure+40), (self.GTO, 1)])
+        return self._set_vars(var_dict)
+
     def move_and_wait_for_pos(self, position, speed, force):
         """Sends commands to start moving towards the given position, with the specified speed and force, and
         then waits for the move to complete.
@@ -301,16 +362,25 @@ class RobotiqCModelURCap:
         return final_pos, RobotiqCModelURCap.ObjectStatus(final_obj)
 
 
-def mainLoop(ur_address):
+def mainLoop(ur_address, gripper_type):
   # Gripper is a C-Model that is connected to a UR controller with the Robotiq URCap installed. 
   # Commands are published to port 63352 as ASCII strings.
-  gripper = RobotiqCModelURCap(ur_address)
+  gripper = RobotiqCModelURCap(ur_address, gripper_type)
 
   gripper.activate(True)
   # The Gripper status
-  pub = rospy.Publisher('~status', Robotiq2FGripper_robot_input, queue_size=3)
+  if gripper_type == 'vacuum':
+    input_msg = vacuum_gripper_input
+    output_msg = vacuum_gripper_output
+  elif gripper_type == 'finger':
+    input_msg = finger_gripper_input
+    output_msg = finger_gripper_output
+  else:
+    raise RuntimeError(f"Unknown gripper type requested: {gripper_type}")
+
+  pub = rospy.Publisher('~status', input_msg, queue_size=3)
   # The Gripper command
-  rospy.Subscriber('~command', Robotiq2FGripper_robot_output, gripper.sendCommand)
+  rospy.Subscriber('~command', output_msg, gripper.sendCommand)
   
   while not rospy.is_shutdown():
     # Get and publish the Gripper status
@@ -322,7 +392,7 @@ def mainLoop(ur_address):
 if __name__ == '__main__':
   rospy.init_node('robotiq_2f_gripper_socket_node')
   ip = rospy.get_param("~robot_ip", "192.168.43.92")
-  print(ip)
+  gripper_type = rospy.get_param("~gripper_type", "finger")
   try:
-    mainLoop(ip)
+    mainLoop(ip, gripper_type)
   except rospy.ROSInterruptException: pass
