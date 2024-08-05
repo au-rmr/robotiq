@@ -23,37 +23,30 @@
         </material>
       </visual>
       <visual>
-        <origin xyz="0 0 ${0.1}" rpy="0 0 0"/>
+        <origin xyz="0 0 ${0.12}" rpy="0 0 0"/>
         <geometry>
-          <cylinder radius="0.006" length="0.08"/>
+          <cylinder radius="0.006" length="0.12"/>
         </geometry>
         <material name="mat2">
           <color rgba="1 0 0 1"/>
         </material>
       </visual>
-        <!-- -0.095 + 0.102/2 = -0.044-->
-      <!-- <visual>
-        <origin xyz="0 0 ${-0.044+0.095+0.014+0.09}" rpy="0 0 0"/>
-        <geometry>
-          <cylinder radius="0.006" length="0.09"/>
-        </geometry>
-      </visual>  -->
-      <collision>
-        <!-- -0.095 + 0.102/2 = -0.044-->
-        <origin xyz="0 0 0" rpy="0 0 0"/>
-        <geometry>
-          <cylinder radius="0.05" length="0.18"/>
-        </geometry>
-      </collision>
       <collision>
         <origin xyz="0 0 ${0.12}" rpy="0 0 0"/>
         <geometry>
-          <cylinder radius="0.006" length="0.08"/>
+          <cylinder radius="0.006" length="0.12"/>
         </geometry>
         <material name="mat2">
           <color rgba="1 0 0 1"/>
         </material>
       </collision>
+      <!-- <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <cylinder radius="0.05" length="0.08"/>
+        </geometry>
+      </collision> -->
+
       <!-- -0.095 + 0.102/2 = -0.044-->
       <!-- <collision>
         <origin xyz="0 0 ${-0.044+0.095+0.014+0.09}" rpy="0 0 0"/>
@@ -66,7 +59,7 @@
     <joint name="$hand__end_effector_joint" type="fixed">
       <parent link="${hand_link_name}"/>
       <child link="epick_end_effector"/>
-      <origin xyz="0 0 ${.12+.090}" rpy="0 0 0"/>
+      <origin xyz="0 0 ${.15+.090}" rpy="0 0 0"/>
     </joint>
 
 
