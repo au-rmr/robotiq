@@ -14,7 +14,7 @@
         <inertia ixx="0.003084" ixy="0.0" ixz="0.0" iyy="0.002999" iyz="0.0" izz="0.000546" />
       </inertial>
       <visual>
-        <origin xyz="0 0 ${0.097/2}" rpy="0 0 0"/>
+        <origin xyz="0 0 ${0.097/2}" rpy="0 0 ${.5 * pi}"/>
         <geometry>          
           <mesh filename="package://robotiq_epick_visualization/meshes/visual/robotiq_epick.dae" scale="0.001 0.001 0.001"/>          
         </geometry>
@@ -23,7 +23,7 @@
         </material>        
       </visual>
       <visual>        
-        <origin xyz="0 0 ${0.08/2+0.097}" rpy="0 0 0"/>
+        <origin xyz="0 0 ${0.1}" rpy="0 0 0"/>
         <geometry>          
           <cylinder radius="0.006" length="0.08"/>
         </geometry>
@@ -40,13 +40,13 @@
       </visual>  -->
       <collision>
         <!-- -0.095 + 0.102/2 = -0.044-->
-        <origin xyz="0 0 ${0.114/2}" rpy="0 0 0"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
         <geometry>          
-          <cylinder radius="0.035" length="0.114"/>
+          <cylinder radius="0.05" length="0.12"/>
         </geometry>       
       </collision>      
       <collision>        
-        <origin xyz="0 0 ${0.08/2+0.097}" rpy="0 0 0"/>
+        <origin xyz="0 0 ${0.1}" rpy="0 0 0"/>
         <geometry>          
           <cylinder radius="0.006" length="0.08"/>
         </geometry>
@@ -74,7 +74,7 @@
     <link name="epick_end_effector">
       <gravity>0</gravity>
       <visual>
-        <origin rpy="0 0 0" xyz="0 0 .005"/>
+        <origin rpy="0 0 0" xyz="0 0 -.04"/>
         <geometry>
           <cylinder radius="0.0225" length="0.01"/>          
         </geometry>
@@ -83,7 +83,7 @@
         </material>
       </visual>
       <collision>
-        <origin rpy="0 0 0" xyz="0 0 .005"/>
+        <origin rpy="0 0 0" xyz="0 0 -0.04"/>
         <geometry>
           <cylinder radius="0.0225" length="0.01"/>          
         </geometry>
